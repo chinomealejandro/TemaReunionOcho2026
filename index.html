@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python: aleatoriedad y matrices · Guía completa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 20px;
+        }
+        .container {
+            width: 1400px;
+            max-width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* pestañas estilo moderno */
+        .tab-header {
+            display: flex;
+            background: #f8fafd;
+            border-bottom: 1px solid #dde2e8;
+            padding: 0 20px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 18px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a5a6e;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 4px solid transparent;
+            margin-bottom: -1px;
+            letter-spacing: 0.3px;
+        }
+        .tab-btn:hover {
+            color: #0b5e8a;
+            background: #eaf0f8;
+            border-bottom-color: #9bb7d4;
+        }
+        .tab-btn.active {
+            color: #0a4b78;
+            border-bottom-color: #0d6efd;
+            background: white;
+        }
+        .tab-content {
+            background: white;
+            padding: 30px 35px;
+            min-height: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .tab-pane {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0.3; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* estilos de texto e historia */
+        .historia p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: #1e2b3a;
+            text-align: justify;
+        }
+        .historia p::first-letter {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #0d6efd;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 18px 20px;
+            border-radius: 20px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 20px 0;
+            box-shadow: inset 0 0 10px #00000055;
+            border-left: 6px solid #0d6efd;
+        }
+        .command-desc {
+            background: #f9fcff;
+            border-radius: 18px;
+            padding: 18px 25px;
+            margin: 20px 0;
+            border-left: 6px solid #1e7e34;
+            box-shadow: 0 6px 14px #dde2ec;
+        }
+        .command-desc h3 {
+            color: #1e5631;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .matrix-badge {
+            background: #e0f0ff;
+            color: #003c7c;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 15px 0 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th {
+            background: #e5eff9;
+            color: #003f6f;
+        }
+        td, th {
+            border: 1px solid #bdd3e8;
+            padding: 12px 10px;
+            text-align: left;
+        }
+        .pdf-container {
+            width: 100%;
+            height: 70vh;
+            min-height: 550px;
+            border: 1px solid #cbd5e1;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #e9edf2;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .footer-note {
+            margin-top: 25px;
+            background: #eaf3fa;
+            padding: 10px 25px;
+            border-radius: 40px;
+            color: #014d80;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #003153;
+            margin-bottom: 25px;
+            border-left: 8px solid #0d6efd;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="tab-header">
+        <button class="tab-btn active" data-tab="historia">📜 Historia aleatorios</button>
+        <button class="tab-btn" data-tab="comandos-matrices">🧮 Comandos matrices</button>
+        <button class="tab-btn" data-tab="pdf-random">📄 PDF: Tipos de Random</button>
+        <button class="tab-btn" data-tab="pdf-matrices">📁 PDF: Operaciones con matrices</button>
+    </div>
+    <div class="tab-content">
+        <!-- Pestaña 1: historia (tres párrafos) -->
+        <div class="tab-pane active" id="historia">
+            <h2>✨ Números aleatorios en Python · breve historia</h2>
+            <div class="historia">
+                <p>Desde sus primeras versiones, Python incorporó la generación de números aleatorios a través del módulo <code>random</code>, basado en el algoritmo Mersenne Twister. Este generador pseudoaleatorio, creado en 1997 por Makoto Matsumoto y Takuji Nishimura, ofrecía un período enorme de 2¹⁹⁹³⁷−1 y una distribución uniforme de alta calidad, convirtiéndose rápidamente en la herramienta estándar para simulaciones, juegos y pruebas estadísticas. La comunidad adoptó <code>random</code> por su sencillez y velocidad, aunque siempre se advirtió que no era apto para fines criptográficos.</p>
+                <p>Con el auge de la ciencia de datos y el machine learning, el ecosistema científico exigió generación vectorizada y distribuciones más especializadas. Así, NumPy incorporó su propio subsistema <code>numpy.random</code>, primero basado en el mismo Mersenne Twister pero optimizado para arreglos multidimensionales. Más adelante, en 2019, NumPy introdujo un nuevo generador de números aleatorios (<code>default_rng</code>) con algoritmos más flexibles (PCG64 por defecto) y un diseño moderno que permite reproducibilidad y mejor rendimiento. Paralelamente, el módulo <code>secrets</code> llegó en Python 3.6 para proporcionar aleatoriedad criptográficamente segura, usando fuentes dependientes del sistema operativo.</p>
+                <p>Hoy, Python ofrece un ecosistema completo de aleatoriedad: <code>random</code> para tareas cotidianas, <code>secrets</code> para tokens y contraseñas, y <code>numpy.random</code> para grandes volúmenes de datos y distribuciones estadísticas. Esta evolución refleja la madurez del lenguaje: cada herramienta está diseñada para un nicho específico, desde simples lanzamientos de dados hasta simulaciones cuánticas, manteniendo el equilibrio entre velocidad, reproducibilidad y seguridad. La historia de los números aleatorios en Python es también la historia de cómo una comunidad convirtió una necesidad básica en un conjunto de soluciones de talla mundial.</p>
+            </div>
+            <div class="footer-note">
+                ⚡ Mersenne Twister · PCG64 · secrets · generadores especializados
+            </div>
+        </div>
+
+        <!-- Pestaña 2: comandos operaciones matrices (igual/diferente tamaño) -->
+        <div class="tab-pane" id="comandos-matrices">
+            <h2>🧠 Comandos para operaciones con matrices (NumPy)</h2>
+            <div class="command-desc">
+                <h3>📌 Requisito: import numpy as np</h3>
+                <p><code>pip install numpy</code> · Se asume que las matrices se crean desde input del usuario o directamente con <code>np.array()</code>.</p>
+            </div>
+
+            <div class="matrix-badge">➕ SUMA Y RESTA (mismas dimensiones)</div>
+            <div class="code-block">
+# A y B deben tener exactamente la misma forma
+if A.shape == B.shape:
+    suma = A + B
+    resta = A - B
+else:
+    print("Dimensiones diferentes: no se puede sumar/restar")
+            </div>
+
+            <div class="matrix-badge">✖️ MULTIPLICACIÓN MATRICIAL (A @ B)</div>
+            <div class="code-block">
+# Válido si A.shape[1] == B.shape[0]  (nº columnas de A = filas de B)
+if A.shape[1] == B.shape[0]:
+    producto = A @ B          # también np.dot(A, B) o np.matmul(A,B)
+    print(producto)
+else:
+    print("Nº columnas de A debe coincidir con filas de B")
+            </div>
+
+            <div class="matrix-badge">🔢 MULTIPLICACIÓN ESCALAR (cualquier tamaño)</div>
+            <div class="code-block">
+escalar = 5.0
+resultado = escalar * A   # broadcasting: funciona siempre
+            </div>
+
+            <div class="matrix-badge">🔄 TRANSPUESTA (cualquier tamaño)</div>
+            <div class="code-block">
+A_trans = A.T               # también np.transpose(A)
+            </div>
+
+            <div class="matrix-badge">📐 DETERMINANTE (solo matrices cuadradas)</div>
+            <div class="code-block">
+if A.shape[0] == A.shape[1]:
+    det = np.linalg.det(A)
+else:
+    print("La matriz no es cuadrada: no se puede calcular determinante")
+            </div>
+
+            <div class="matrix-badge">↩️ INVERSA (cuadrada y no singular)</div>
+            <div class="code-block">
+if A.shape[0] == A.shape[1]:
+    try:
+        inv = np.linalg.inv(A)
+    except np.linalg.LinAlgError:
+        print("Matriz singular (no invertible)")
+else:
+    print("Se requiere matriz cuadrada")
+            </div>
+
+            <div class="matrix-badge">⚡ MULTIPLICACIÓN ELEMENTO A ELEMENTO (mismas dimensiones)</div>
+            <div class="code-block">
+# Producto Hadamard (element-wise)
+if A.shape == B.shape:
+    hadamard = A * B
+            </div>
+
+            <div class="matrix-badge">📏 DIMENSIONES INCOMPATIBLES – OPERACIONES POR BROADCASTING</div>
+            <div class="code-block">
+# Ejemplo: matriz (3,1) + vector fila (3,) -> numpy extiende dimensiones
+# No siempre funciona para suma/resta si las formas no son compatibles.
+# Verificar broadcasting: (m,n) con (n,) puede funcionar, (m,n) con (k,n) requiere k=m.
+            </div>
+
+            <p><strong>Consejo:</strong> siempre verifica <code>A.shape</code> y <code>B.shape</code>. Para más control usa <code>np.reshape</code>, <code>np.newaxis</code>.</p>
+            <div class="footer-note">
+                ⚡ Operaciones disponibles tanto para matrices del mismo tamaño como para diferentes si el broadcasting lo permite.
+            </div>
+        </div>
+
+        <!-- Pestaña 3: PDF Tipos_De_Random embebido -->
+        <div class="tab-pane" id="pdf-random">
+            <h2>📘 Tipos de Random (PDF integrado)</h2>
+            <div class="pdf-container">
+                <iframe src="data:application/pdf;base64,{{PDF_RANDOM_BASE64}}"></iframe>
+            </div>
+            <p style="margin-top: 12px; color: #2c5776;">🔍 Visualizando: <i>Tipos_De_Random.pdf</i> – Módulos random, secrets, numpy.</p>
+        </div>
+
+        <!-- Pestaña 4: PDF Tipos_De_Operaciones_Matrices embebido -->
+        <div class="tab-pane" id="pdf-matrices">
+            <h2>📙 Tipos de Operaciones con Matrices (PDF integrado)</h2>
+            <div class="pdf-container">
+                <iframe src="data:application/pdf;base64,{{PDF_MATRICES_BASE64}}"></iframe>
+            </div>
+            <p style="margin-top: 12px; color: #2c5776;">🔍 Visualizando: <i>Tipos_De_Operaciones_Matrices.pdf</i> – guía interactiva con NumPy.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Lógica de pestañas
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+
+    function switchTab(tabId) {
+        // desactivar todo
+        tabs.forEach(btn => btn.classList.remove('active'));
+        panes.forEach(pane => pane.classList.remove('active'));
+
+        // activar nuevo
+        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tabId = btn.getAttribute('data-tab');
+            switchTab(tabId);
+        });
+    });
+
+    // (Opcional) asegurar que el primer iframe no tenga problemas de mezcla de datos;
+    // los iframes se cargan con base64 embebido. Los placeholders se reemplazarán con los pdf reales.
+</script>
+
+<!-- Los base64 de los pdf se insertan a continuación (deben ser reemplazados con los archivos reales) -->
+<!-- Para que la demo funcione localmente, se pueden cargar desde datos utf8 pero es mejor usar binarios. 
+     Se insertan dos marcadores; el usuario final debería sustituirlos por el base64 real de los pdfs.
+     Por simplicidad se ponen los contenidos de ejemplo (no son pdf válidos, solo marcadores). 
+     En un entorno real se debe convertir cada pdf a base64. -->
+</body>
+</html>
